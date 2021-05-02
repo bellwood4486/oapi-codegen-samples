@@ -36,26 +36,22 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Pet'
+                  $ref: '#/components/schemas/Post'
 components:
   schemas:
-    Pet:
-      allOf:
-        - $ref: '#/components/schemas/NewPet'
-        - required:
-            - id
-          properties:
-            id:
-              type: integer
-              format: int64
-              description: Unique id of the pet
-    NewPet:
-      required:
-        - name
+    Post:
       properties:
-        name:
+        id:
+          type: integer
+          description: Unique id of the pet
+        title:
           type: string
-          description: Name of the pet
-        tag:
+          description: Title of the post
+        content:
           type: string
-          description: Type of the pet
+          description: Content of the post
+      required:
+        - id
+        - title
+      title: Post
+      description: Post is a entry of the blog.
