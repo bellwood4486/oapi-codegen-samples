@@ -2,27 +2,28 @@ package oapi
 
 import (
 	"encoding/json"
-	"github.com/bellwood4486/oapi-codegen-samples/mix_legacy_chi/oapi"
+	"fmt"
+	"log"
 	"net/http"
 	"sync"
 )
 
 // BlogAPIImpl implements OpenAPI-based endpoints.
 type BlogAPIImpl struct{
-	posts map[int]oapi.Post
+	posts map[int]Post
 	lock sync.Mutex
 	nextID int
 }
 
 func NewBlogAPIImpl() *BlogAPIImpl {
 	return &BlogAPIImpl{
-		posts: make(map[int]oapi.Post),
+		posts: make(map[int]Post),
 		nextID: 1,
 	}
 }
 
 func (b *BlogAPIImpl) FindPosts(w http.ResponseWriter, r *http.Request) {
-	result := make([]oapi.Post, 0)
+	result := make([]Post, 0)
 	for _, v := range b.posts {
 		result = append(result, v)
 	}
@@ -33,13 +34,16 @@ func (b *BlogAPIImpl) FindPosts(w http.ResponseWriter, r *http.Request) {
 func (b *BlogAPIImpl) AddPost(w http.ResponseWriter, r *http.Request) {
 	var newPost NewPost
 	if err := json.NewDecoder(r.Body).Decode(&newPost); err != nil {
+		log.Println(err)
 		b.sendBlogAPIError(w, http.StatusBadRequest, "Invalid format for NewPost")
 		return
 	}
 	b.lock.Lock()
 	defer b.lock.Unlock()
 
-	var post oapi.Post
+	fmt.Printf("additionalProperties: %#v\n", newPost.AdditionalProperties)
+
+	var post Post
 	post.Title = newPost.Title
 	post.Content = newPost.Content
 	post.Id = b.nextID

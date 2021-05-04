@@ -4,9 +4,12 @@
 package oapi
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/pkg/errors"
 )
 
 // Error defines model for Error.
@@ -21,8 +24,9 @@ type Error struct {
 
 // NewPost defines model for NewPost.
 type NewPost struct {
-	Content *string `json:"content,omitempty"`
-	Title   string  `json:"title"`
+	Content              *string           `json:"content,omitempty"`
+	Title                string            `json:"title"`
+	AdditionalProperties map[string]string `json:"-"`
 }
 
 // Post defines model for Post.
@@ -38,6 +42,87 @@ type AddPostJSONBody NewPost
 
 // AddPostJSONRequestBody defines body for AddPost for application/json ContentType.
 type AddPostJSONRequestBody AddPostJSONBody
+
+// Getter for additional properties for NewPost. Returns the specified
+// element and whether it was found
+func (a NewPost) Get(fieldName string) (value string, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for NewPost
+func (a *NewPost) Set(fieldName string, value string) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]string)
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for NewPost to handle AdditionalProperties
+func (a *NewPost) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["content"]; found {
+		err = json.Unmarshal(raw, &a.Content)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'content'")
+		}
+		delete(object, "content")
+	}
+
+	if raw, found := object["title"]; found {
+		err = json.Unmarshal(raw, &a.Title)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'title'")
+		}
+		delete(object, "title")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]string)
+		for fieldName, fieldBuf := range object {
+			var fieldVal string
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return errors.Wrap(err, fmt.Sprintf("error unmarshaling field %s", fieldName))
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for NewPost to handle AdditionalProperties
+func (a NewPost) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.Content != nil {
+		object["content"], err = json.Marshal(a.Content)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'content'"))
+		}
+	}
+
+	object["title"], err = json.Marshal(a.Title)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'title'"))
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling '%s'", fieldName))
+		}
+	}
+	return json.Marshal(object)
+}
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {

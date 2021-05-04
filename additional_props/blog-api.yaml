@@ -47,7 +47,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Post'
-          headers: {}
         default:
           description: unexpected error
           content:
@@ -69,6 +68,8 @@ components:
     NewPost:
       title: NewPost
       type: object
+      additionalProperties:
+        type: string
       properties:
         title:
           type: string
