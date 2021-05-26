@@ -1,0 +1,90 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Sample Blog Service
+  description: A sample API for Blog
+  contact:
+    name: Sample Author
+    email: sample@example.com
+    url: 'http://localhost'
+servers:
+  - url: 'http://localhost:8000'
+tags:
+  - name: post
+paths:
+  /posts:
+    get:
+      summary: Return all posts
+      tags:
+        - post
+      description: .
+      operationId: findPosts
+      responses:
+        '200':
+          description: .
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+    post:
+      summary: Create a new post
+      tags:
+        - post
+      description: Creates a new post.
+      operationId: addPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPost'
+      responses:
+        '201':
+          description: post response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Post:
+      title: Post
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+          required:
+            - id
+        - $ref: '#/components/schemas/NewPost'
+    NewPost:
+      title: NewPost
+      type: object
+      additionalProperties:
+        type: string
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+      required:
+        - title
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          description: Error code
+        message:
+          type: string
+          description: Error message
