@@ -38,21 +38,20 @@ func (b *BlogAPI) AddPost(w http.ResponseWriter, r *http.Request) {
 		b.sendBlogAPIError(w, http.StatusBadRequest, "Invalid format for NewPost")
 		return
 	}
-	b.lock.Lock()
-	defer b.lock.Unlock()
-
-	fmt.Printf("additionalProperties: %#v\n", newPost.AdditionalProperties)
-
-	var post Post
-	post.Title = newPost.Title
-	post.Content = newPost.Content
-	post.Id = b.nextID
-	b.nextID++
-
-	b.posts[post.Id] = post
-
-	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(post)
+	_, _ = fmt.Fprintln(w, "success")
+	//b.lock.Lock()
+	//defer b.lock.Unlock()
+	//
+	//var post Post
+	//post.Title = newPost.Title
+	//post.Content = newPost.Content
+	//post.Id = b.nextID
+	//b.nextID++
+	//
+	//b.posts[post.Id] = post
+	//
+	//w.WriteHeader(http.StatusCreated)
+	//_ = json.NewEncoder(w).Encode(post)
 }
 
 func (b *BlogAPI) sendBlogAPIError(w http.ResponseWriter, code int, message string) {

@@ -19,6 +19,15 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Defines values for NewPostTestEnum.
+const (
+	NewPostTestEnumBird NewPostTestEnum = "bird"
+
+	NewPostTestEnumCat NewPostTestEnum = "cat"
+
+	NewPostTestEnumDog NewPostTestEnum = "dog"
+)
+
 // Error defines model for Error.
 type Error struct {
 
@@ -32,9 +41,24 @@ type Error struct {
 // NewPost defines model for NewPost.
 type NewPost struct {
 	Content              *string           `json:"content,omitempty"`
-	Title                string            `json:"title"`
+	TestEnum             *NewPostTestEnum  `json:"test_enum,omitempty"`
+	TestExclusiveMaximum *int              `json:"test_exclusive_maximum,omitempty"`
+	TestExclusiveMinimum *int              `json:"test_exclusive_minimum,omitempty"`
+	TestMaxItems         *[]int            `json:"test_max_items,omitempty"`
+	TestMaxLength        *string           `json:"test_max_length,omitempty"`
+	TestMaximum          *int              `json:"test_maximum,omitempty"`
+	TestMinItems         *[]int            `json:"test_min_items,omitempty"`
+	TestMinLength        *string           `json:"test_min_length,omitempty"`
+	TestMinimum          *int              `json:"test_minimum,omitempty"`
+	TestMultipleOf       *int              `json:"test_multiple_of,omitempty"`
+	TestPattern          *string           `json:"test_pattern,omitempty"`
+	TestUniqueItems      *[]int            `json:"test_unique_items,omitempty"`
+	Title                *string           `json:"title,omitempty"`
 	AdditionalProperties map[string]string `json:"-"`
 }
+
+// NewPostTestEnum defines model for NewPost.TestEnum.
+type NewPostTestEnum string
 
 // Post defines model for Post.
 type Post struct {
@@ -83,6 +107,102 @@ func (a *NewPost) UnmarshalJSON(b []byte) error {
 		delete(object, "content")
 	}
 
+	if raw, found := object["test_enum"]; found {
+		err = json.Unmarshal(raw, &a.TestEnum)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_enum'")
+		}
+		delete(object, "test_enum")
+	}
+
+	if raw, found := object["test_exclusive_maximum"]; found {
+		err = json.Unmarshal(raw, &a.TestExclusiveMaximum)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_exclusive_maximum'")
+		}
+		delete(object, "test_exclusive_maximum")
+	}
+
+	if raw, found := object["test_exclusive_minimum"]; found {
+		err = json.Unmarshal(raw, &a.TestExclusiveMinimum)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_exclusive_minimum'")
+		}
+		delete(object, "test_exclusive_minimum")
+	}
+
+	if raw, found := object["test_max_items"]; found {
+		err = json.Unmarshal(raw, &a.TestMaxItems)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_max_items'")
+		}
+		delete(object, "test_max_items")
+	}
+
+	if raw, found := object["test_max_length"]; found {
+		err = json.Unmarshal(raw, &a.TestMaxLength)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_max_length'")
+		}
+		delete(object, "test_max_length")
+	}
+
+	if raw, found := object["test_maximum"]; found {
+		err = json.Unmarshal(raw, &a.TestMaximum)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_maximum'")
+		}
+		delete(object, "test_maximum")
+	}
+
+	if raw, found := object["test_min_items"]; found {
+		err = json.Unmarshal(raw, &a.TestMinItems)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_min_items'")
+		}
+		delete(object, "test_min_items")
+	}
+
+	if raw, found := object["test_min_length"]; found {
+		err = json.Unmarshal(raw, &a.TestMinLength)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_min_length'")
+		}
+		delete(object, "test_min_length")
+	}
+
+	if raw, found := object["test_minimum"]; found {
+		err = json.Unmarshal(raw, &a.TestMinimum)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_minimum'")
+		}
+		delete(object, "test_minimum")
+	}
+
+	if raw, found := object["test_multiple_of"]; found {
+		err = json.Unmarshal(raw, &a.TestMultipleOf)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_multiple_of'")
+		}
+		delete(object, "test_multiple_of")
+	}
+
+	if raw, found := object["test_pattern"]; found {
+		err = json.Unmarshal(raw, &a.TestPattern)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_pattern'")
+		}
+		delete(object, "test_pattern")
+	}
+
+	if raw, found := object["test_unique_items"]; found {
+		err = json.Unmarshal(raw, &a.TestUniqueItems)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_unique_items'")
+		}
+		delete(object, "test_unique_items")
+	}
+
 	if raw, found := object["title"]; found {
 		err = json.Unmarshal(raw, &a.Title)
 		if err != nil {
@@ -117,9 +237,95 @@ func (a NewPost) MarshalJSON() ([]byte, error) {
 		}
 	}
 
-	object["title"], err = json.Marshal(a.Title)
-	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'title'"))
+	if a.TestEnum != nil {
+		object["test_enum"], err = json.Marshal(a.TestEnum)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_enum'"))
+		}
+	}
+
+	if a.TestExclusiveMaximum != nil {
+		object["test_exclusive_maximum"], err = json.Marshal(a.TestExclusiveMaximum)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_exclusive_maximum'"))
+		}
+	}
+
+	if a.TestExclusiveMinimum != nil {
+		object["test_exclusive_minimum"], err = json.Marshal(a.TestExclusiveMinimum)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_exclusive_minimum'"))
+		}
+	}
+
+	if a.TestMaxItems != nil {
+		object["test_max_items"], err = json.Marshal(a.TestMaxItems)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_max_items'"))
+		}
+	}
+
+	if a.TestMaxLength != nil {
+		object["test_max_length"], err = json.Marshal(a.TestMaxLength)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_max_length'"))
+		}
+	}
+
+	if a.TestMaximum != nil {
+		object["test_maximum"], err = json.Marshal(a.TestMaximum)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_maximum'"))
+		}
+	}
+
+	if a.TestMinItems != nil {
+		object["test_min_items"], err = json.Marshal(a.TestMinItems)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_min_items'"))
+		}
+	}
+
+	if a.TestMinLength != nil {
+		object["test_min_length"], err = json.Marshal(a.TestMinLength)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_min_length'"))
+		}
+	}
+
+	if a.TestMinimum != nil {
+		object["test_minimum"], err = json.Marshal(a.TestMinimum)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_minimum'"))
+		}
+	}
+
+	if a.TestMultipleOf != nil {
+		object["test_multiple_of"], err = json.Marshal(a.TestMultipleOf)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_multiple_of'"))
+		}
+	}
+
+	if a.TestPattern != nil {
+		object["test_pattern"], err = json.Marshal(a.TestPattern)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_pattern'"))
+		}
+	}
+
+	if a.TestUniqueItems != nil {
+		object["test_unique_items"], err = json.Marshal(a.TestUniqueItems)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_unique_items'"))
+		}
+	}
+
+	if a.Title != nil {
+		object["title"], err = json.Marshal(a.Title)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'title'"))
+		}
 	}
 
 	for fieldName, field := range a.AdditionalProperties {
@@ -229,16 +435,19 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/6xUQW/bPAz9KwK/72jE7nYZfFo6bEAvW7Aeix40i3FUyJJG0W2DwP99kGQ7iZMNG9CT",
-	"bZrvkeJ71AEa13ln0XKA+gCh2WEn0+tnIkfxxZPzSKwxhRunMD4Vhoa0Z+0s1DlZpH8F8N4j1KAtY4sE",
-	"QwEdhiDb3+Km3zM0MGnbwjAUQPiz14QK6gcY+af0x6GAr/iycYEjs1RKR1ppNmcdLziLiwNZRstXM1mz",
-	"wSt/Fn3ltMc5f+5qPpD78YQNR8q5W2O+baF+WM5Xq5N68wgXBbVK1RbcB/ifcAs1/FceVS1HScupp+Gk",
-	"zxyI7Npu3TQN2aQOsZPaxEPLzhv8iK/puWpcBwVY2UWC+xQT6553jqCAniJix+zrsjSukWaXShQL3dci",
-	"jMjNndg6ErfGtXBsbOSNUXGP9KybKPwzUsj4m1W1qiKt82il11DD+xQqwEvepUmW3oXs6hb50norSGiS",
-	"8ftOQQ1ftFWbhInTDt7ZkDV5V1ULp0jvjW4StHwKkW/anaQhY5eAf9JjMw5mVFESyX3WYtlnjIW+6yTt",
-	"oYbvyD1ZIY0RfmyWZRuiLeJ32go/muyc6ROhZAxCCosvCXw5g7VSo3Oj3zDwrVP7fzr8X3nw3NBMPQ4X",
-	"M795s7LHmucDiSMQU9Vs0q3sDb9Z4XyHXqncW3z12DAqgWPOqcZZqROhLkVOAKS4EukWub559YeqqvLK",
-	"Z/hh2lyf74LhVwAAAP//hgs20AIGAAA=",
+	"H4sIAAAAAAAC/6xWW4/aPBD9K9F831uzELbaqspT2aqVVuoFdd+KKPImA3jl29qTXSjiv1d2nEACVFTa",
+	"p9hjnzPjMxfYQqGl0QoVOci34IoVShaWn6zV1i+M1QYtcQzmQpfovyW6wnJDXCvI68tJOEuBNgYhB64I",
+	"l2hhl4JE59jyLK45bqGOLFdL2O1SsPhUcYsl5FOI/M312S6Fb/gy0Y48MytL7mmZmHQi7nGmRw9ShIpO",
+	"3iR0NEdVSX9af6dQ6iWkUDCCFB64LWGWnkOuC1E5/oxzydZcRprG+LWxka0whfbKKMtOadhn5OqYsbFF",
+	"xmY7Ok8o2XrOCWWQol2cyCBb39WnNy0Xs5ZtOkwC1ZJWnkGy9Ze4OfDe0+dAlYteL7m6LFiuYrDX54Ll",
+	"6jBYrppgb87Gutf7Il0rQdwInOtFgMTt9wXk1zfvzsIMI0KrQts1S/g1HV/9ZFe/Z2/gXHSV4k8VXiRO",
+	"R48UamSUy9eNv8JJ4ImG2B+1fdfy6YdHLMg7aPtRCP/caX+C8PJUYL1W54dt1XJv4X+LC8jhv+F+bg3j",
+	"0Bo2Me1m+zhrg2fnaqGbfmdFiBAl48K/j0kj8AOuw3dQaAkpKCY9wX2wJeOKVtp6vaxHrIhMPhwKXTCx",
+	"Ci7S3mQbJy4iJ3fJQtvkVoS50QQWeb01uUf7zAs/2p7Ruho/GmSDzNNqg4oZDjm8DabUV8YqKDk02tVz",
+	"e4l0PFwHENCW+f1dCTl85qqcBIxX2xmtXJ2T6yzrzUJmjOBFgA4fnVb7X4dOff0tH5MoTLcDd0dSDUL2",
+	"XSUlsxvI4QdSZVXChEhMDJbY0vmy8Psw900ssi7TR4uM0CUsUfgSwMcajMsyVq6vN3R0q8vNPz3+ohrs",
+	"FnRsrJ7mo1dzu/fZFcRLkDRe6yJdsErQqzmu/yWc8FwpXBssCMsE453DHNeZOkjUcZIDAK1viTBFTnde",
+	"/j7Lsrrla/i26VxTz4LdnwAAAP//GX/NIuQIAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

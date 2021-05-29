@@ -70,13 +70,59 @@ components:
       type: object
       additionalProperties:
         type: string
+      description: ''
       properties:
         title:
           type: string
         content:
           type: string
-      required:
-        - title
+        test_multiple_of:
+          type: integer
+          multipleOf: 256
+        test_maximum:
+          type: integer
+          maximum: 100
+        test_exclusive_maximum:
+          type: integer
+          maximum: 100
+          exclusiveMaximum: true
+        test_minimum:
+          type: integer
+          minimum: 10
+        test_exclusive_minimum:
+          type: integer
+          minimum: 10
+          exclusiveMinimum: true
+        test_max_length:
+          type: string
+          maxLength: 10
+        test_min_length:
+          type: string
+          minLength: 5
+        test_pattern:
+          type: string
+          pattern: '^[A-Za-z]+'
+        test_max_items:
+          type: array
+          maxItems: 5
+          items:
+            type: integer
+        test_min_items:
+          type: array
+          minItems: 2
+          items:
+            type: integer
+        test_unique_items:
+          type: array
+          uniqueItems: true
+          items:
+            type: integer
+        test_enum:
+          type: string
+          enum:
+            - dog
+            - cat
+            - bird
     Error:
       required:
         - code
