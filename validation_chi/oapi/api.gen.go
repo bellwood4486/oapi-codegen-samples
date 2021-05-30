@@ -13,7 +13,9 @@ import (
 	"net/url"
 	"path"
 	"strings"
+	"time"
 
+	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
 	"github.com/pkg/errors"
@@ -40,21 +42,26 @@ type Error struct {
 
 // NewPost defines model for NewPost.
 type NewPost struct {
-	Content              *string           `json:"content,omitempty"`
-	TestEnum             *NewPostTestEnum  `json:"test_enum,omitempty"`
-	TestExclusiveMaximum *int              `json:"test_exclusive_maximum,omitempty"`
-	TestExclusiveMinimum *int              `json:"test_exclusive_minimum,omitempty"`
-	TestMaxItems         *[]int            `json:"test_max_items,omitempty"`
-	TestMaxLength        *string           `json:"test_max_length,omitempty"`
-	TestMaximum          *int              `json:"test_maximum,omitempty"`
-	TestMinItems         *[]int            `json:"test_min_items,omitempty"`
-	TestMinLength        *string           `json:"test_min_length,omitempty"`
-	TestMinimum          *int              `json:"test_minimum,omitempty"`
-	TestMultipleOf       *int              `json:"test_multiple_of,omitempty"`
-	TestPattern          *string           `json:"test_pattern,omitempty"`
-	TestUniqueItems      *[]int            `json:"test_unique_items,omitempty"`
-	Title                *string           `json:"title,omitempty"`
-	AdditionalProperties map[string]string `json:"-"`
+	Content                *string              `json:"content,omitempty"`
+	TestEnum               *NewPostTestEnum     `json:"test_enum,omitempty"`
+	TestExclusiveMaximum   *int                 `json:"test_exclusive_maximum,omitempty"`
+	TestExclusiveMinimum   *int                 `json:"test_exclusive_minimum,omitempty"`
+	TestFormatByte         *[]byte              `json:"test_format_byte,omitempty"`
+	TestFormatDate         *openapi_types.Date  `json:"test_format_date,omitempty"`
+	TestFormatDatetime     *time.Time           `json:"test_format_datetime,omitempty"`
+	TestFormatEmail        *openapi_types.Email `json:"test_format_email,omitempty"`
+	TestMaxItems           *[]int               `json:"test_max_items,omitempty"`
+	TestMaxLength          *string              `json:"test_max_length,omitempty"`
+	TestMaximum            *int                 `json:"test_maximum,omitempty"`
+	TestMinItems           *[]int               `json:"test_min_items,omitempty"`
+	TestMinLength          *string              `json:"test_min_length,omitempty"`
+	TestMinimum            *int                 `json:"test_minimum,omitempty"`
+	TestMultipleOf         *int                 `json:"test_multiple_of,omitempty"`
+	TestMultipleOfDecimals *float32             `json:"test_multiple_of_decimals,omitempty"`
+	TestPattern            *string              `json:"test_pattern,omitempty"`
+	TestUniqueItems        *[]int               `json:"test_unique_items,omitempty"`
+	Title                  *string              `json:"title,omitempty"`
+	AdditionalProperties   map[string]string    `json:"-"`
 }
 
 // NewPostTestEnum defines model for NewPost.TestEnum.
@@ -131,6 +138,38 @@ func (a *NewPost) UnmarshalJSON(b []byte) error {
 		delete(object, "test_exclusive_minimum")
 	}
 
+	if raw, found := object["test_format_byte"]; found {
+		err = json.Unmarshal(raw, &a.TestFormatByte)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_format_byte'")
+		}
+		delete(object, "test_format_byte")
+	}
+
+	if raw, found := object["test_format_date"]; found {
+		err = json.Unmarshal(raw, &a.TestFormatDate)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_format_date'")
+		}
+		delete(object, "test_format_date")
+	}
+
+	if raw, found := object["test_format_datetime"]; found {
+		err = json.Unmarshal(raw, &a.TestFormatDatetime)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_format_datetime'")
+		}
+		delete(object, "test_format_datetime")
+	}
+
+	if raw, found := object["test_format_email"]; found {
+		err = json.Unmarshal(raw, &a.TestFormatEmail)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_format_email'")
+		}
+		delete(object, "test_format_email")
+	}
+
 	if raw, found := object["test_max_items"]; found {
 		err = json.Unmarshal(raw, &a.TestMaxItems)
 		if err != nil {
@@ -185,6 +224,14 @@ func (a *NewPost) UnmarshalJSON(b []byte) error {
 			return errors.Wrap(err, "error reading 'test_multiple_of'")
 		}
 		delete(object, "test_multiple_of")
+	}
+
+	if raw, found := object["test_multiple_of_decimals"]; found {
+		err = json.Unmarshal(raw, &a.TestMultipleOfDecimals)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_multiple_of_decimals'")
+		}
+		delete(object, "test_multiple_of_decimals")
 	}
 
 	if raw, found := object["test_pattern"]; found {
@@ -258,6 +305,34 @@ func (a NewPost) MarshalJSON() ([]byte, error) {
 		}
 	}
 
+	if a.TestFormatByte != nil {
+		object["test_format_byte"], err = json.Marshal(a.TestFormatByte)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_format_byte'"))
+		}
+	}
+
+	if a.TestFormatDate != nil {
+		object["test_format_date"], err = json.Marshal(a.TestFormatDate)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_format_date'"))
+		}
+	}
+
+	if a.TestFormatDatetime != nil {
+		object["test_format_datetime"], err = json.Marshal(a.TestFormatDatetime)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_format_datetime'"))
+		}
+	}
+
+	if a.TestFormatEmail != nil {
+		object["test_format_email"], err = json.Marshal(a.TestFormatEmail)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_format_email'"))
+		}
+	}
+
 	if a.TestMaxItems != nil {
 		object["test_max_items"], err = json.Marshal(a.TestMaxItems)
 		if err != nil {
@@ -304,6 +379,13 @@ func (a NewPost) MarshalJSON() ([]byte, error) {
 		object["test_multiple_of"], err = json.Marshal(a.TestMultipleOf)
 		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_multiple_of'"))
+		}
+	}
+
+	if a.TestMultipleOfDecimals != nil {
+		object["test_multiple_of_decimals"], err = json.Marshal(a.TestMultipleOfDecimals)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_multiple_of_decimals'"))
 		}
 	}
 
@@ -435,19 +517,20 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/6xWW4/aPBD9K9F831uzELbaqspT2aqVVuoFdd+KKPImA3jl29qTXSjiv1d2nEACVFTa",
-	"p9hjnzPjMxfYQqGl0QoVOci34IoVShaWn6zV1i+M1QYtcQzmQpfovyW6wnJDXCvI68tJOEuBNgYhB64I",
-	"l2hhl4JE59jyLK45bqGOLFdL2O1SsPhUcYsl5FOI/M312S6Fb/gy0Y48MytL7mmZmHQi7nGmRw9ShIpO",
-	"3iR0NEdVSX9af6dQ6iWkUDCCFB64LWGWnkOuC1E5/oxzydZcRprG+LWxka0whfbKKMtOadhn5OqYsbFF",
-	"xmY7Ok8o2XrOCWWQol2cyCBb39WnNy0Xs5ZtOkwC1ZJWnkGy9Ze4OfDe0+dAlYteL7m6LFiuYrDX54Ll",
-	"6jBYrppgb87Gutf7Il0rQdwInOtFgMTt9wXk1zfvzsIMI0KrQts1S/g1HV/9ZFe/Z2/gXHSV4k8VXiRO",
-	"R48UamSUy9eNv8JJ4ImG2B+1fdfy6YdHLMg7aPtRCP/caX+C8PJUYL1W54dt1XJv4X+LC8jhv+F+bg3j",
-	"0Bo2Me1m+zhrg2fnaqGbfmdFiBAl48K/j0kj8AOuw3dQaAkpKCY9wX2wJeOKVtp6vaxHrIhMPhwKXTCx",
-	"Ci7S3mQbJy4iJ3fJQtvkVoS50QQWeb01uUf7zAs/2p7Ruho/GmSDzNNqg4oZDjm8DabUV8YqKDk02tVz",
-	"e4l0PFwHENCW+f1dCTl85qqcBIxX2xmtXJ2T6yzrzUJmjOBFgA4fnVb7X4dOff0tH5MoTLcDd0dSDUL2",
-	"XSUlsxvI4QdSZVXChEhMDJbY0vmy8Psw900ssi7TR4uM0CUsUfgSwMcajMsyVq6vN3R0q8vNPz3+ohrs",
-	"FnRsrJ7mo1dzu/fZFcRLkDRe6yJdsErQqzmu/yWc8FwpXBssCMsE453DHNeZOkjUcZIDAK1viTBFTnde",
-	"/j7Lsrrla/i26VxTz4LdnwAAAP//GX/NIuQIAAA=",
+	"H4sIAAAAAAAC/6xW227jNhD9FWHatyq2kiJFoadmixYI0IvRfWuQGow4trngbclR1m7gfy94kWxJVusC",
+	"ebI45DkznMuh36AxyhqNmjzUb+CbHSoWP39yzrjwYZ2x6EhgNDeGY/jl6BsnLAmjoU6Hi7hXAh0sQg1C",
+	"E27RwbEEhd6z7Syu2+6hnpzQWzgeS3D4uRUOOdRPkPm748/HEn7DLyvjKTAzzkWgZXI1iHjEWU4upAk1",
+	"XTxJ6GmNulVhN/0+ATdbKKFhBCW8CMfhuZxD7hvZevGKa8X2QmWazvhrZyPXYgn9kduqupTDMaPQU8bO",
+	"lhm75e084cY4xWj9cqBYnbSEGqJh7l4ZxNkIFA1XgEioKfAmWv8DjYoJOYAmyxxMsf1aEKpY6f7jQoOy",
+	"/WPave+pmHPsMGCSqLe0CwyK7X/Ji7PkTp13JbqquEro64IVOgd7Nxes0OfBCt0Fez8b66mdrmkb1UoS",
+	"VuLabCIkL3/fQH13/901sDXHRigm/RhfLU630q16OYNbRoROR1HqPuGvp4ebP9nN38/fzHZBq8XnFq/K",
+	"7SCdJSRkznaYqnBEkMQLcnHa6lWp5zMvn7Ch4KBXKynDbZ/G+ir4pcBGQijORafnfoOvHW6ghq+WJ1Vf",
+	"ZklfdjEdn09xJkNgF3pjOjVkTYwwzxp4pqzEH3AffxeNUVCCZmGE4WO0FQ8t7YwL+XIBsSOy9XIpTcPk",
+	"LrooR7r/UPiMXD0WG+OKDzKqahdY5g3W4iO6V9EEaXhF5xP+dlEtqkBrLGpmBdTwbTSVoTN2MZNLa3x6",
+	"1bZI06dnARHtWFg/cqjhZ6H5KmJCtr012qea3FXV6KVg1krRROjykzf69HYO+uvf6rHKiRkO8HGSqkWs",
+	"vm+VYu4ANfyB1DpdMCkLm4MltvWhLcI6voo2N9mQ6UeHjNAXrND4JYKnOXjgPHdu6Df09MHww/+6/FU9",
+	"OGzoPFijnN++m9uTz2FCQgqKzmtq0g1rJb2b4/Qf6oLnVuPeYkPIC8xnzmucKnVWqGmRIwBdGImoIpcn",
+	"r/6+qqo08gn+1k2uTVpw/CcAAP//niTNEQIKAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

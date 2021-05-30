@@ -79,6 +79,9 @@ components:
         test_multiple_of:
           type: integer
           multipleOf: 256
+        test_multiple_of_decimals:
+          type: number
+          multipleOf: 0.2
         test_maximum:
           type: integer
           maximum: 100
@@ -123,6 +126,18 @@ components:
             - dog
             - cat
             - bird
+        test_format_byte:
+          type: string
+          format: byte
+        test_format_date:
+          type: string
+          format: date
+        test_format_datetime:
+          type: string
+          format: date-time
+        test_format_email:
+          type: string
+          format: email
     Error:
       required:
         - code

@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/getkin/kin-openapi/openapi3"
+
 	"github.com/go-chi/chi/v5"
 
 	"github.com/bellwood4486/oapi-codegen-samples/validation_chi/oapi"
@@ -18,6 +20,8 @@ func main() {
 		os.Exit(1)
 	}
 	swagger.Servers = nil
+	openapi3.DefineIPv4Format()
+	openapi3.DefineIPv6Format()
 
 	r := chi.NewRouter()
 	r.Use(middleware.OapiRequestValidator(swagger))
