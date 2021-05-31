@@ -50,6 +50,8 @@ type NewPost struct {
 	TestFormatDate         *openapi_types.Date  `json:"test_format_date,omitempty"`
 	TestFormatDatetime     *time.Time           `json:"test_format_datetime,omitempty"`
 	TestFormatEmail        *openapi_types.Email `json:"test_format_email,omitempty"`
+	TestFormatIpv4         *string              `json:"test_format_ipv4,omitempty"`
+	TestFormatIpv6         *string              `json:"test_format_ipv6,omitempty"`
 	TestMaxItems           *[]int               `json:"test_max_items,omitempty"`
 	TestMaxLength          *string              `json:"test_max_length,omitempty"`
 	TestMaximum            *int                 `json:"test_maximum,omitempty"`
@@ -168,6 +170,22 @@ func (a *NewPost) UnmarshalJSON(b []byte) error {
 			return errors.Wrap(err, "error reading 'test_format_email'")
 		}
 		delete(object, "test_format_email")
+	}
+
+	if raw, found := object["test_format_ipv4"]; found {
+		err = json.Unmarshal(raw, &a.TestFormatIpv4)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_format_ipv4'")
+		}
+		delete(object, "test_format_ipv4")
+	}
+
+	if raw, found := object["test_format_ipv6"]; found {
+		err = json.Unmarshal(raw, &a.TestFormatIpv6)
+		if err != nil {
+			return errors.Wrap(err, "error reading 'test_format_ipv6'")
+		}
+		delete(object, "test_format_ipv6")
 	}
 
 	if raw, found := object["test_max_items"]; found {
@@ -330,6 +348,20 @@ func (a NewPost) MarshalJSON() ([]byte, error) {
 		object["test_format_email"], err = json.Marshal(a.TestFormatEmail)
 		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_format_email'"))
+		}
+	}
+
+	if a.TestFormatIpv4 != nil {
+		object["test_format_ipv4"], err = json.Marshal(a.TestFormatIpv4)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_format_ipv4'"))
+		}
+	}
+
+	if a.TestFormatIpv6 != nil {
+		object["test_format_ipv6"], err = json.Marshal(a.TestFormatIpv6)
+		if err != nil {
+			return nil, errors.Wrap(err, fmt.Sprintf("error marshaling 'test_format_ipv6'"))
 		}
 	}
 
@@ -517,20 +549,20 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/6xW227jNhD9FWHatyq2kiJFoadmixYI0IvRfWuQGow4trngbclR1m7gfy94kWxJVusC",
-	"ebI45DkznMuh36AxyhqNmjzUb+CbHSoWP39yzrjwYZ2x6EhgNDeGY/jl6BsnLAmjoU6Hi7hXAh0sQg1C",
-	"E27RwbEEhd6z7Syu2+6hnpzQWzgeS3D4uRUOOdRPkPm748/HEn7DLyvjKTAzzkWgZXI1iHjEWU4upAk1",
-	"XTxJ6GmNulVhN/0+ATdbKKFhBCW8CMfhuZxD7hvZevGKa8X2QmWazvhrZyPXYgn9kduqupTDMaPQU8bO",
-	"lhm75e084cY4xWj9cqBYnbSEGqJh7l4ZxNkIFA1XgEioKfAmWv8DjYoJOYAmyxxMsf1aEKpY6f7jQoOy",
-	"/WPave+pmHPsMGCSqLe0CwyK7X/Ji7PkTp13JbqquEro64IVOgd7Nxes0OfBCt0Fez8b66mdrmkb1UoS",
-	"VuLabCIkL3/fQH13/901sDXHRigm/RhfLU630q16OYNbRoROR1HqPuGvp4ebP9nN38/fzHZBq8XnFq/K",
-	"7SCdJSRkznaYqnBEkMQLcnHa6lWp5zMvn7Ch4KBXKynDbZ/G+ir4pcBGQijORafnfoOvHW6ghq+WJ1Vf",
-	"ZklfdjEdn09xJkNgF3pjOjVkTYwwzxp4pqzEH3AffxeNUVCCZmGE4WO0FQ8t7YwL+XIBsSOy9XIpTcPk",
-	"LrooR7r/UPiMXD0WG+OKDzKqahdY5g3W4iO6V9EEaXhF5xP+dlEtqkBrLGpmBdTwbTSVoTN2MZNLa3x6",
-	"1bZI06dnARHtWFg/cqjhZ6H5KmJCtr012qea3FXV6KVg1krRROjykzf69HYO+uvf6rHKiRkO8HGSqkWs",
-	"vm+VYu4ANfyB1DpdMCkLm4MltvWhLcI6voo2N9mQ6UeHjNAXrND4JYKnOXjgPHdu6Df09MHww/+6/FU9",
-	"OGzoPFijnN++m9uTz2FCQgqKzmtq0g1rJb2b4/Qf6oLnVuPeYkPIC8xnzmucKnVWqGmRIwBdGImoIpcn",
-	"r/6+qqo08gn+1k2uTVpw/CcAAP//niTNEQIKAAA=",
+	"H4sIAAAAAAAC/6xWS2/jNhD+K8K0tyq2kjZBoVOzRQsE6MPo3hqkBiOObS74WnKUtRv4vxd8yLYkq/EC",
+	"OYkc8vtmOE+9QmOUNRo1eahfwTcbVCwuf3HOuLCwzlh0JDCKG8MxfDn6xglLwmio0+UinpVAO4tQg9CE",
+	"a3SwL0Gh92w9ieuOD1BPTug17PclOPzcCocc6kfI/N31p30Jf+CXhfEUmBnnItAyuehZPOAsRw/ShJrO",
+	"3iT0tETdqnCavo/AzRpKaBhBCc/CcXgqp5DbRrZevOBSsa1QmaYT/t7JyLVYwuHKdVWd8+GQUegxYyfL",
+	"jN32eppwZZxitHzeUYxO2kINUTD1rgzibACKggtAJNQYeBWlb6BRMSF70CR5Aybsyw89VBS8Dbobgu4m",
+	"QYptl4JQxZw6LM6UAts+pNPbAxVzju16TBL1mjaBQbHtb3lzEsax8i4ZLkojJfRlxgqdjb2ZMlboU2OF",
+	"7oy9nbT1mLiXJKhqJQkrcWlWEZK3f66gvrm9uwS25NgIxaQf4qvZ8VW6Vc8ncMuI0OnY/rol/PN4f/U3",
+	"u/r36bvJLGi1+NziRb7tubOEhMzeDvUbrgiSeKYxHY8O/e/AZ54/YUNBwaEvShle+zjs5IKfM2zQcsVp",
+	"eztwv8K3DldQwzfz4/yY5+Ex72zaPx3tTILALvTKdH2XNdHCXNXgmbISf8Jt/M4ao6AEzUKzgI9RVty3",
+	"tDEu+MsFxIbI1vO5NA2Tm6iiHEyY+8Jn5OKhWBlXfJCxf3eGZd4gLT6iexFNaEIv6HzCX8+qWRVojUXN",
+	"rIAavo+iMmTGJnpybo1P83ONNB5yM4hox8L+gUMNvwrNFxETvO2t0T7F5KaqBjOJWStFE6HzT97o45Tu",
+	"5df/xWORHdMv4P3IVbMYfd8qxdwOavgLqXW6YFIWNhtLbO1DWoR9nL82J1mf6WeHjNAXrND4JYLHPrjn",
+	"PGduyDf09MHw3Vc9/qIc7Cd0LqyBz6/fTe1RZ98hwQVFpzUl6Yq1kt5NcfpbO6O51bi12BDyAvOd0xin",
+	"SJ0EahzkCEAXSiJ2kfOVV/9YVVUq+QR/7SrXpl6w/y8AAP//S0+TqGwKAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

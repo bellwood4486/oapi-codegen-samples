@@ -400,7 +400,7 @@ request body has an error: doesn't match the schema: Error at "/test_enum": valu
 
 ### format(string)
 
-Defined in OpenAPIv3.0.1
+Defined in [OpenAPIv3.0.3](https://swagger.io/specification/#data-types)
 
 |Format|Support|Default or Optional|
 |------|-------|--------|
@@ -410,28 +410,29 @@ Defined in OpenAPIv3.0.1
 |date-time|o   |Default |
 |password|x    |-       |
 
-
-oapi-codegen with kin-openapi supports `byte`, `date`, `date-time` and `email`. ([code](https://github.com/getkin/kin-openapi/blob/93b779808793a8a6b54ffc1f87ba17d0ffa12b70/openapi3/schema_formats.go#L80))
-
 Defined in [JSON Schema](https://json-schema.org/draft/2020-12/json-schema-validation.html#rfc.section.7.3)
 
-|Format|Support|Default or Optional|
-|------|-------|--------|
-|email |o      |Default |
-|idn-email|x      |-       |
-|hostname|x      |-       |
-|idn-hostname|x      |-       |
-|ipv4   |o      |Optional       |
-|ipv6   |o      |Optional       |
-|uri    |x      |-       |
-|uri-reference|x      |-       |
-|iri    |x      |-       |
-|iri-reference|x      |-       |
-|uuid   |x      |-|
-|uri-template|x |- |
-|json-pointer|x |- |
-|relative-json-pointer|x |-|
-|regex|x |- |
+|Format         |Support|Default or Optional|
+|---------------|-------|--------|
+|email          |o      |Default |
+|idn-email      |x      |-       |
+|hostname       |x      |-       |
+|idn-hostname   |x      |-       |
+|ipv4           |o      |[Optional](https://github.com/getkin/kin-openapi/blob/17153345908503543b50b7b6409f9d030bae0beb/openapi3/schema_formats.go#L98)|
+|ipv6           |o      |[Optional](https://github.com/getkin/kin-openapi/blob/17153345908503543b50b7b6409f9d030bae0beb/openapi3/schema_formats.go#L103)|
+|uri            |x      |-       |
+|uri-reference  |x      |-       |
+|iri            |x      |-       |
+|iri-reference  |x      |-       |
+|uuid           |x      |-       |
+|uri-template   |x      |-       |
+|json-pointer   |x      |-       |
+|relative-json-pointer|x|-       |
+|regex          |x      |-       |
+
+kin-openapi set up the default validators in [`init` function](https://github.com/getkin/kin-openapi/blob/17153345908503543b50b7b6409f9d030bae0beb/openapi3/schema_formats.go#L80).
+
+To use the optional validators, Call a function explicitly.
 
 validation code
 https://github.com/getkin/kin-openapi/blob/93b779808793a8a6b54ffc1f87ba17d0ffa12b70/openapi3/schema.go#L1175
@@ -537,7 +538,64 @@ request body has an error: doesn't match the schema: Error at "/test_format_emai
 
 #### ipv4
 
+Call `DefineIPv4Format` function for validation.
+```go
+func main() {
+	// ...snip...
+	openapi3.DefineIPv4Format()
+
+	r := chi.NewRouter()
+	r.Use(middleware.OapiRequestValidator(swagger))
+	// ...snip...
+}
+```
+yaml
+```yaml
+      properties:
+        #...
+        test_format_datetime:
+          type: string
+          format: ipv4
+```
+results
+```
+❯ curl -d "{\"test_format_ipv4\":\"127.0.0.1\"}" -H "Content-Type: application/json" http://localhost:8000/posts
+success
+
+❯ curl -d "{\"test_format_ipv4\":\"😀\"}" -H "Content-Type: application/json" http://localhost:8000/posts
+request body has an error: doesn't match the schema: Error at "/test_format_ipv4": Not an IP address
+```
+
 #### ipv6
+
+Call `DefineIPv6Format` function for validation.
+```go
+func main() {
+// ...snip...
+openapi3.DefineIPv6Format()
+
+r := chi.NewRouter()
+r.Use(middleware.OapiRequestValidator(swagger))
+// ...snip...
+}
+```
+
+yaml
+```yaml
+      properties:
+        #...
+        test_format_datetime:
+          type: string
+          format: ipv6
+```
+results
+```
+❯ curl -d "{\"test_format_ipv6\":\"2001:0db8:0000:0000:1235:0000:0000:0abc\"}" -H "Content-Type: application/json" http://localhost:8000/posts
+success
+
+❯ curl -d "{\"test_format_ipv6\":\"😀\"}" -H "Content-Type: application/json" http://localhost:8000/posts
+request body has an error: doesn't match the schema: Error at "/test_format_ipv6": Not an IP address
+```
 
 #### custom(regex base)
 
