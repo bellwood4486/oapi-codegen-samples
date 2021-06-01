@@ -571,12 +571,12 @@ request body has an error: doesn't match the schema: Error at "/test_format_ipv4
 Call `DefineIPv6Format` function for validation.
 ```go
 func main() {
-// ...snip...
-openapi3.DefineIPv6Format()
+    // ...snip...
+    openapi3.DefineIPv6Format()
 
-r := chi.NewRouter()
-r.Use(middleware.OapiRequestValidator(swagger))
-// ...snip...
+    r := chi.NewRouter()
+    r.Use(middleware.OapiRequestValidator(swagger))
+    // ...snip...
 }
 ```
 
@@ -597,9 +597,81 @@ success
 request body has an error: doesn't match the schema: Error at "/test_format_ipv6": Not an IP address
 ```
 
-#### custom(regex base)
+#### custom using regex
 
+Set a callback function using `DefineStringFormat` for validation.
 
-#### custom(callback base)
+The following sample validates postal code format.
+```go
+func DefinePostalFormat() {
+    openapi3.DefineStringFormat("postal", `^[0-9]{3}-[0-9]{4}$`)
+}
 
-例：uuid
+func main() {
+	// ...snip...
+    DefinePostalFormat()
+
+    r := chi.NewRouter()
+    r.Use(middleware.OapiRequestValidator(swagger))
+    // ...snip... 
+}
+```
+
+yaml
+```yaml
+      properties:
+        #...
+        test_format_datetime:
+          type: string
+          format: postal
+```
+
+results
+```
+❯ curl -d "{\"test_format_postal\":\"123-4567\"}" -H "Content-Type: application/json" http://localhost:8000/posts
+success
+
+❯ curl -d "{\"test_format_postal\":\"😀\"}" -H "Content-Type: application/json" http://localhost:8000/posts
+request body has an error: doesn't match the schema: Error at "/test_format_postal": string doesn't match the format "postal" (regular expression "^[0-9]{3}-[0-9]{4}$")
+```
+
+#### custom using callback
+
+Set a callback function using `DefineStringFormatCallback` for validation.
+
+The following sample validates UUID format.
+```go
+func DefineUUIDFormat() {
+    openapi3.DefineStringFormatCallback("uuid", func(uuidStr string) error {
+        _, err := uuid.Parse(uuidStr)
+        return err
+    })
+}
+
+func main() {
+	// ...snip...
+    DefineUUIDFormat()
+
+    r := chi.NewRouter()
+    r.Use(middleware.OapiRequestValidator(swagger))
+    // ...snip... 
+}
+```
+
+yaml
+```yaml
+properties:
+  #...
+  test_format_uuid:
+    type: string
+    format: uuid
+```
+
+results
+```
+❯ curl -d "{\"test_format_uuid\":\"6ff11118-cb7f-48ac-b284-a6c8062c8acc\"}" -H "Content-Type: application/json" http://localhost:8000/posts
+success
+
+❯ curl -d "{\"test_format_uuid\":\"😀\"}" -H "Content-Type: application/json" http://localhost:8000/posts
+request body has an error: doesn't match the schema: Error at "/test_format_uuid": invalid UUID length: 4
+```

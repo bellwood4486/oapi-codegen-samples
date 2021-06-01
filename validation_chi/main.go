@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/google/uuid"
+
 	"github.com/getkin/kin-openapi/openapi3"
 
 	"github.com/go-chi/chi/v5"
@@ -12,6 +14,17 @@ import (
 	"github.com/bellwood4486/oapi-codegen-samples/validation_chi/oapi"
 	middleware "github.com/deepmap/oapi-codegen/pkg/chi-middleware"
 )
+
+func DefineUUIDFormat() {
+	openapi3.DefineStringFormatCallback("uuid", func(uuidStr string) error {
+		_, err := uuid.Parse(uuidStr)
+		return err
+	})
+}
+
+func DefinePostalFormat() {
+	openapi3.DefineStringFormat("postal", `^[0-9]{3}-[0-9]{4}$`)
+}
 
 func main() {
 	swagger, err := oapi.GetSwagger()
@@ -22,6 +35,8 @@ func main() {
 	swagger.Servers = nil
 	openapi3.DefineIPv4Format()
 	openapi3.DefineIPv6Format()
+	DefineUUIDFormat()
+	DefinePostalFormat()
 
 	r := chi.NewRouter()
 	r.Use(middleware.OapiRequestValidator(swagger))

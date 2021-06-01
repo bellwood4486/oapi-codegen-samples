@@ -6,5 +6,6 @@ require (
 	github.com/deepmap/oapi-codegen v1.6.1
 	github.com/getkin/kin-openapi v0.53.0
 	github.com/go-chi/chi/v5 v5.0.3
+	github.com/google/uuid v1.2.0 // indirect
 	github.com/pkg/errors v0.8.1
 )
