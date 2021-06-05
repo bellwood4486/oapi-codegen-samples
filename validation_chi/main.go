@@ -40,6 +40,12 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.OapiRequestValidator(swagger))
+	// Use `OapiRequestValidatorWithOptions` if you want to change validator's behavior.
+	//r.Use(middleware.OapiRequestValidatorWithOptions(swagger, &middleware.Options{
+	//	Options: openapi3filter.Options{
+	//		MultiError: true,
+	//	},
+	//}))
 
 	blogAPI := oapi.NewBlogAPI()
 	oapi.HandlerFromMux(blogAPI, r)
