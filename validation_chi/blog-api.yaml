@@ -28,6 +28,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Post'
+      parameters:
+        - schema:
+            type: integer
+            maximum: 100
+          in: query
+          name: limit
     post:
       summary: Create a new post
       tags:
@@ -53,6 +59,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  '/posts/{id}':
+    parameters:
+      - schema:
+          type: integer
+          minimum: 1
+        name: id
+        in: path
+        required: true
+    get:
+      summary: Return a post
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+      operationId: getPost
+      description: Return a post.
 components:
   schemas:
     Post:

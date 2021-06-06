@@ -22,13 +22,20 @@ func NewBlogAPI() *BlogAPI {
 	}
 }
 
-func (b *BlogAPI) FindPosts(w http.ResponseWriter, r *http.Request) {
-	result := make([]Post, 0)
-	for _, v := range b.posts {
-		result = append(result, v)
-	}
-	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(result)
+func (b *BlogAPI) FindPosts(w http.ResponseWriter, r *http.Request, params FindPostsParams) {
+	_, _ = fmt.Fprintln(w, "success")
+	//result := make([]Post, 0)
+	//for _, v := range b.posts {
+	//	result = append(result, v)
+	//}
+	//w.WriteHeader(http.StatusOK)
+	//_ = json.NewEncoder(w).Encode(result)
+}
+
+func (b *BlogAPI) GetPost(w http.ResponseWriter, r *http.Request, id int) {
+	// do nothing
+	fmt.Printf("called GetPost with id:%d\n", id)
+	_, _ = fmt.Fprintln(w, "success")
 }
 
 func (b *BlogAPI) AddPost(w http.ResponseWriter, r *http.Request) {

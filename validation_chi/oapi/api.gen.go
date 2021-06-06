@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/go-chi/chi/v5"
@@ -77,6 +78,11 @@ type Post struct {
 	Id int `json:"id"`
 	// Embedded struct due to allOf(#/components/schemas/NewPost)
 	NewPost `yaml:",inline"`
+}
+
+// FindPostsParams defines parameters for FindPosts.
+type FindPostsParams struct {
+	Limit *int `json:"limit,omitempty"`
 }
 
 // AddPostJSONBody defines parameters for AddPost.
@@ -487,10 +493,13 @@ func (a NewPost) MarshalJSON() ([]byte, error) {
 type ServerInterface interface {
 	// Return all posts
 	// (GET /posts)
-	FindPosts(w http.ResponseWriter, r *http.Request)
+	FindPosts(w http.ResponseWriter, r *http.Request, params FindPostsParams)
 	// Create a new post
 	// (POST /posts)
 	AddPost(w http.ResponseWriter, r *http.Request)
+	// Return a post
+	// (GET /posts/{id})
+	GetPost(w http.ResponseWriter, r *http.Request, id int)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -505,8 +514,24 @@ type MiddlewareFunc func(http.HandlerFunc) http.HandlerFunc
 func (siw *ServerInterfaceWrapper) FindPosts(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params FindPostsParams
+
+	// ------------- Optional query parameter "limit" -------------
+	if paramValue := r.URL.Query().Get("limit"); paramValue != "" {
+
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", r.URL.Query(), &params.Limit)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter limit: %s", err), http.StatusBadRequest)
+		return
+	}
+
 	var handler = func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.FindPosts(w, r)
+		siw.Handler.FindPosts(w, r, params)
 	}
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -522,6 +547,32 @@ func (siw *ServerInterfaceWrapper) AddPost(w http.ResponseWriter, r *http.Reques
 
 	var handler = func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.AddPost(w, r)
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler(w, r.WithContext(ctx))
+}
+
+// GetPost operation middleware
+func (siw *ServerInterfaceWrapper) GetPost(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id int
+
+	err = runtime.BindStyledParameter("simple", false, "id", chi.URLParam(r, "id"), &id)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Invalid format for parameter id: %s", err), http.StatusBadRequest)
+		return
+	}
+
+	var handler = func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetPost(w, r, id)
 	}
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -574,6 +625,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/posts", wrapper.AddPost)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/posts/{id}", wrapper.GetPost)
+	})
 
 	return r
 }
@@ -581,21 +635,22 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/6xWS2/jNhD+K8K0tyq2kjZBoVOzRQsE6MPo3hqkBiOObS74WnKUtWv4vxd8yLZkq/YC",
-	"OYkc8vtmOE9toTHKGo2aPNRb8M0KFYvLX5wzLiysMxYdCYzixnAMX46+ccKSMBrqdLmIZyXQxiLUIDTh",
-	"Eh3sSlDoPVuO4rrjPdSTE3oJu10JDj+3wiGH+hkyf3f9ZVfCH/hlZjwFZsa5CLRMznoWDzjLkwdpQk1n",
-	"bxJ6mqNuVThN32fgZgklNIyghFfhOLyUY8h1I1sv3nCu2FqoTNMJf+9k5FosYX/ltqrO+XDIKPQpYyfL",
-	"jN32dpxwYZxiNH/dUIxO2kINUTD2rgzibACKgitAJNQp8CZKL6BRMSF70CS5ABP27YceKgougx6GoIdL",
-	"IGs8sb6FWXQB2LaC92BRMAZSbD0XhCpm8H5xpvDY+imd3u+pmHNs02OSqJe0CgyKrX/Lm6OkOVXepd5V",
-	"SauEvs5YobOxd2PGCn1srNCdsfejth7K5JpyUK0kYSXOzSJC8vbPBdR39w/XwOYcG6GY9EN8NTm8Srfq",
-	"9QhuGRE6HZttt4R/nh9v/mY3/758N5oFrRafW7zKtz13lpCQ2duhW4QrgiSeaYOHo3233fOZ10/YUFCw",
-	"78JShtc+D+dGyu6hYYMGL46b6Z57C986XEAN30wP02qaR9W0s2n3crAzCQK70AvTdXnWRAtzDwHPlJX4",
-	"E67jd9IYBSVoFloTfIyy4rGllXHBXy4gVkS2nk6laZhcRRXlYJ49Fj4jZ0/Fwrjig4zTojMs8wZp8RHd",
-	"m2hCy3tD5xP+dlJNqkBrLGpmBdTwfRSVITNW0ZPT0FDiaol0OlInENGOhf0Thxp+FZrPIiZ421ujfYrJ",
-	"XVUNJiCzVoomQqefvNGHf4Jefv1fPGbZMf0C3p24ahKj71ulmNtADX8htU4XTMrCZmOJLX1Ii7CP097m",
-	"JOsz/eyQEfqCFRq/RPCpDx45z5kb8g09fTB881WPvyoH+wmdC2vg89t3U3vQ2XdIcEHRaU1JumCtpHdT",
-	"nP4Nz2huNa4tNoS8wHznOMYpUkeBOg1yBKALJRG7yPnKq3+sqiqVfIJvu8q1qRfs/gsAAP//j1E+bNoK",
-	"AAA=",
+	"H4sIAAAAAAAC/6xWW4/rNBD+K9HAG9k2u7ArlCf2IEArLmfFeWNVKm8ybX3k29qTnpYq/x3ZcZImbWiB",
+	"8xR77O+b8VxzgEJLoxUqcpAfwBUblCwsf7BWW78wVhu0xDGIC12i/5boCssNca0gby4n4SwF2huEHLgi",
+	"XKOFOgWJzrH1JK497qCOLFdrqOsULL5V3GIJ+QtE/vb6ok7hN/z0rB15ZlaW3NMy8TyweMSZnjxIESo6",
+	"e5PQ0RJVJf1p832BUq8hhYIRpPDKbQmLdAq5K0Tl+BaXku24jDSt8NdWRrbCFLort1l2zodjRq5OGVtZ",
+	"ZGy3t9OEK20lo+XrnkJ0mi3kEART74qgko1AQXAFiLg8Bd4E6QU0SsbFANpILsC42X4zQAXBZdDDGPRw",
+	"CWS0Iza0MIouAKuKlwNYEEyBJNstOaEMGdwtzhQe2z01p/cdFbOW7QdMAtWaNp5Bst0vcXOUNKfK29S7",
+	"KmklV9cZy1U09m7KWK6OjeWqNfZ+0ta+TK4pB1kJ4kbgUq8CJG7fryC/u3+4BrYsseCSCTfGZ7P+VaqS",
+	"r0dww4jQqtBs2yX8+fJ48we7+Wvx1WQWVIq/VXiVbwfuTKFBRm/7buGvcBJ4pg32R1237fj060csyCvo",
+	"urAQ/rUv47nRZPfYsFGD58fNtOM+wJcWV5DDF/N+Ws3jqJq3NtWL3s5G4Nm5Wum2y7MiWBh7CDgmjcDv",
+	"cBe+s0JLSEEx35rgQ5AljxVttPX+sh6xITL5fC50wcQmqEhH8+wxcRH5/JSstE3eiTAtWsMir5cmH9Bu",
+	"eeFb3hata/C3s2yWeVptUDHDIYevgyj1mbEJnpz7hhJWa6TTkTqDgLbM759KyOFHrsrngPEslkkktC7E",
+	"iHvEW4V2379dcMl9iBsHX65y73iLzmjlmlDfZdlosDJjBC+CRfOPTqv+V2OQtv8U5ufo72FfqE8iMAtJ",
+	"5Sopmd1DDr8jVVYlTIjERB8QW/vXh8YcfiJMzN0h0/cWGaFLWKLwUwCfuvaxLGNB+DRGR+90uf9Xj78q",
+	"tYd1Eut15PPbz6a21zl0iHdB0mptcn/FKkGfTXHzy3lGc6VwZ7AgLBOMd45j3ETqKFCnQa7TWDfzAy/r",
+	"yeJps2Ui3D8hdeH+Hwn/X5z//ueJxG4eXJ8vbd80+soOPxTDPBqUeTcgzxV50I522/Kfb4n5t1mWNb24",
+	"CcChVd6Yuaj/DgAA///E0040cwwAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
